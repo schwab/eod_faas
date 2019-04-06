@@ -1,0 +1,34 @@
+provider:
+  name: faas
+
+functions:
+  nodeinfo:
+    lang: dockerfile
+    handler: ./NodeInfo
+    image: mcstar/nodeinfo:latest
+    #markdownrender:
+    #lang: dockerfile
+    #handler: ./MarkdownRender
+    #image: mcstar/markdownrender:latest
+    #regression:
+    #lang: python3-arm64
+    #handler: ./regression
+    #image: mcstar/regression:latest
+    #environment:
+    #    write_debug: true
+    #    redis_host: redis
+    #    redis_port: 6379
+  workqueue:
+    lang: python3-arm64
+    handler: ./workqueue
+    image: mcstar/workqueue:latest
+    environment:
+        redis_host: redis
+        redis_port: 6379
+  eod-market:
+    lang: python3-arm64
+    handler: ./eod-market
+    image: mcstar/eod-market:latest
+    environment:
+        redis_host: redis
+        redis_port: 6379
