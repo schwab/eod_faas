@@ -1,0 +1,55 @@
+FROM arm64v8/python:3.8-rc-alpine
+
+ARG ADDITIONAL_PACKAGE
+
+RUN apk --no-cache add curl ${ADDITIONAL_PACKAGE} \
+    && echo "Pulling watchdog binary from Github." \
+    && curl -sSL https://github.com/openfaas/faas/releases/download/0.9.14/fwatchdog-arm64 > /usr/bin/fwatchdog \
+    && chmod +x /usr/bin/fwatchdog \
+    && apk del curl --no-cache
+# scipy numpy pandas matplot
+
+RUN apk --no-cache add make automake gcc g++ subversion python3-dev curl
+# numpy
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3
+RUN mkdir /tmp/wheelhouse
+RUN cd /tmp/wheelhouse
+RUN wget https://github.com/mrjonandrews/aarch64-wheels/tree/master/wheelhouse/numpy-1.14.2-cp35-cp35m-linux_aarch64.whl
+RUN pip3 install --find-links=/tmp/wheelhouse numpy
+# pandas
+RUN pip3 install pandas 
+# redis
+RUN pip3 install redis
+# scipy
+#RUN wget https://github.com/mrjonandrews/aarch64-wheels/blob/master/wheelhouse/scipy-1.0.1-cp35-cp35m-linux_aarch64.whl
+ #RUN pip3 install --find-links=/tmp/wheelhouse scipy
+# Add non root user
+
+RUN addgroup -S app && adduser app -S -G app
+RUN chown app /home/app
+
+USER app
+ENV PATH=$PATH:/home/app/.local/bin
+
+WORKDIR /home/app/
+# enable build for numpy
+COPY index.py           .
+COPY requirements.txt   .
+RUN pip install --user -r requirements.txt
+
+RUN mkdir -p function
+RUN touch ./function/__init__.py
+
+WORKDIR /home/app/function/
+COPY function/requirements.txt	.
+RUN pip install --user -r requirements.txt
+
+WORKDIR /home/app/
+COPY function           function
+
+ENV fprocess="python3 index.py"
+EXPOSE 8080
+
+HEALTHCHECK --interval=3s CMD [ -e /tmp/.lock ] || exit 1
+
+CMD ["fwatchdog"]
