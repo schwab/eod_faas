@@ -10,7 +10,7 @@ class TestEodCommands(unittest.TestCase):
             print(os.environ['redis_host'])  # should print out 'newvalue'
             result = handle("{}")
             self.assertIsNotNone(result)
-            self.assertIn("help",result)
+            self.assertIn("help",result)=
 
 if __name__ == '__main__':
     unittest.main()

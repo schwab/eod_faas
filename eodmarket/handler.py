@@ -13,7 +13,7 @@ def handle(req):
     """
     result = {}
     req_json = json.loads(req)    
-    if not "command" in req or not req["command"] in COMMANDS:
+    if not "command" in req_json or not req_json["command"] in COMMANDS:
        result["help"]="Expected a command %s" % COMMANDS
        return result
     else:
