@@ -11,6 +11,7 @@ def handle(req):
     Args:
         req (str): request body
     """
+    result = {}
     req_json = json.loads(req)    
     if not "command" in req or not req["command"] in COMMANDS:
        result["help"]="Expected a command %s" % COMMANDS
