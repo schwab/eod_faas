@@ -27,8 +27,8 @@ functions:
         redis_port: 6379
   eod-market:
     lang: python3-arm64
-    handler: ./eod-market
-    image: mcstar/eod-market:latest
+    handler: ./eodmarket
+    image: mcstar/eodmarket:latest
     environment:
         redis_host: redis
         redis_port: 6379
