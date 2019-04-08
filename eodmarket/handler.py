@@ -48,12 +48,12 @@ def handle(req):
                     markets=rc.smembers(MARKET_NAMES_KEY)
 
                     parts = req_json["command"].split(":")
-                    print(parts)
+                    #print(parts)
                     if len(parts) == 4 and parts[3] in markets:
-                        print(parts)
+                        #print(parts)
                         all_dates = rc.hkeys("market:dates:%s" % parts[3])
                         if not group_by:
-                            return all_dates
+                            return {"market_dates":all_dates}
                         elif "year" in group_by:
                             result = {}
                             for s in all_dates:
