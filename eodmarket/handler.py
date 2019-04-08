@@ -13,17 +13,17 @@ def handle(req):
     """
     result = {}
     req_json = json.loads(req)    
-    if not "command" in req_json or not req_json["command"] in COMMANDS:
+    if not "command" in req_json or not any( req_json['command'].startswith(x) for x in COMMANDS ):
        result["help"]="Expected a command %s" % COMMANDS
+       
        return result
     else:
         try:
-            
             if  "redis_host" in os.environ and "redis_port" in os.environ:
                 rc = redis.Redis(host=os.getenv("redis_host"), port=os.getenv("redis_port"), decode_responses=True)
                 if 'ls:markets' in req_json["command"]:
                     return rc.smembers(MARKET_NAMES_KEY)
-                if 'ls:market_dates:' in req_json["command"]:
+                if 'ls:market:dates:' in req_json["command"]:
                     group_by=None
                     return_values = "all"
 
@@ -46,10 +46,12 @@ def handle(req):
                     if 'return' in req_json and req_json['return'] in ['counts','all']:
                         return_values = req_json['return']
                     markets=rc.smembers(MARKET_NAMES_KEY)
-                    parts = req_json["command"].split(":")
-                    if len(parts) == 3 and parts[2] in markets:
 
-                        all_dates = rc.hkeys("market:dates:%s" % parts[2])
+                    parts = req_json["command"].split(":")
+                    print(parts)
+                    if len(parts) == 4 and parts[3] in markets:
+                        print(parts)
+                        all_dates = rc.hkeys("market:dates:%s" % parts[3])
                         if not group_by:
                             return all_dates
                         elif "year" in group_by:
@@ -57,9 +59,8 @@ def handle(req):
                             for s in all_dates:
                                 append_year(result, s, return_values)
                             return result
-
                     else:
-                        return {"error":"ls:market_dates expected a valid market"}
+                        return {"error":"ls:market:dates:... expected a valid market name"}
 
         except Exception as err:
             result={"error":err}
