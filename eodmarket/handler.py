@@ -21,6 +21,11 @@ def handle(req):
         try:
             if  "redis_host" in os.environ and "redis_port" in os.environ:
                 rc = redis.Redis(host=os.getenv("redis_host"), port=os.getenv("redis_port"), decode_responses=True)
+                if 'add:market' in req_json["command"]:
+                    splits=req_json["command"].split(":")
+                    if splits and len(splits) == 3:
+                        market = splits[2]
+                        return rc.sadd(MARKET_NAMES_KEY, market)
                 if 'ls:markets' in req_json["command"]:
                     return rc.smembers(MARKET_NAMES_KEY)
                 if 'ls:market:files' in req_json["command"]:
