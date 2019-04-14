@@ -23,6 +23,14 @@ def handle(req):
                 rc = redis.Redis(host=os.getenv("redis_host"), port=os.getenv("redis_port"), decode_responses=True)
                 if 'ls:markets' in req_json["command"]:
                     return rc.smembers(MARKET_NAMES_KEY)
+                if 'ls:market:files' in req_json["command"]:
+                    parts = req_json["command"].split(":")
+                    if len(parts) == 4:
+                        market_name = parts[3]
+                        return result
+                    else:
+                        return {"error":"ls:market:files:... expected a valid market name"}
+
                 if 'ls:market:dates:' in req_json["command"]:
                     group_by=None
                     return_values = "all"
@@ -49,9 +57,9 @@ def handle(req):
 
                     parts = req_json["command"].split(":")
                     #print(parts)
-                    if len(parts) == 4 and parts[3] in markets:
+                    if len(parts) == 3 and parts[2] in markets:
                         #print(parts)
-                        all_dates = rc.hkeys("market:dates:%s" % parts[3])
+                        all_dates = rc.hkeys("market:dates:%s" % parts[2])
                         if not group_by:
                             return {"market_dates":all_dates}
                         elif "year" in group_by:
