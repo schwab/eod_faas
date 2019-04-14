@@ -62,9 +62,9 @@ def handle(req):
 
                     parts = req_json["command"].split(":")
                     #print(parts)
-                    if len(parts) == 3 and parts[2] in markets:
+                    if len(parts) == 4 and parts[3] in markets:
                         #print(parts)
-                        all_dates = rc.hkeys("market:dates:%s" % parts[2])
+                        all_dates = rc.hkeys("market:dates:%s" % parts[3])
                         if not group_by:
                             return {"market_dates":all_dates}
                         elif "year" in group_by:
