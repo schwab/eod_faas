@@ -5,7 +5,7 @@ from dateutil.parser import *
 MARKET_FILES_KEY="market:files:%s"
 MARKET_DATES_KEY="market:dates:%s"
 MARKET_NAMES_KEY="market:names"
-COMMANDS = ["ls:markets","ls:market:dates"]
+COMMANDS = ["ls:markets","ls:market:dates","add:market"]
 def handle(req):
     """handle a request to the function
     Args:
