@@ -7,7 +7,7 @@ from unittest.mock import patch
 class TestEodCommands(unittest.TestCase):
     def setUp(self):
         self.d_settings = {'redis_host': 'lepot_01',
-            'redis_port':'32768'}
+            'redis_port':'6379'}
     def test_help_message_if_no_command(self):
         with patch.dict('os.environ', self.d_settings):
             result = handle("{}")
